@@ -1,0 +1,153 @@
+version: '3.9'
+
+services:
+  go-rest:
+    build:
+      context: ./../go-rest
+      dockerfile: ./../go-rest/Dockerfile
+    restart: always
+    ports: 
+      - "8080:8080"
+    environment:
+      - GIN_MODE=release
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - DB_NAME=users
+      - POOL_MAX_IDLE_CONN=25
+      - POOL_MAX_OPEN_CONN=90
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: '4'
+          memory: 1000M
+        reservations:
+          cpus: '0.5'
+          memory: 500M
+    depends_on:
+      postgres:
+        condition: service_healthy
+  sb-no-vt:
+    image: docker.io/zahariaca/spring-boot-rest:0.0.1-SNAPSHOT
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=novirtual
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/users?sslmode=disable
+      - SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE=25
+      - SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=90
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: '4'
+          memory: 1000M
+        reservations:
+          cpus: '0.5'
+          memory: 500M
+    depends_on:
+      postgres:
+        condition: service_healthy
+  sb-vt:
+    image: docker.io/zahariaca/spring-boot-rest:0.0.1-SNAPSHOT
+    restart: always
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=virtual
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/users?sslmode=disable
+      - SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE=25
+      - SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=90
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: '4'
+          memory: 1000M
+        reservations:
+          cpus: '0.5'
+          memory: 500M
+    depends_on:
+      postgres:
+        condition: service_healthy
+  sb-webflux:
+    image: docker.io/zahariaca/spring-boot-webflux:0.0.1-SNAPSHOT
+    restart: always
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_R2DBC_URL=r2dbc:postgresql://postgres:5432/users?sslmode=disable
+      - SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE=25
+      - SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=90
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: '4'
+          memory: 1000M
+        reservations:
+          cpus: '0.5'
+          memory: 500M
+    depends_on:
+      postgres:
+        condition: service_healthy
+  sb-webflux-bad:
+    image: docker.io/zahariaca/spring-boot-webflux-bad:0.0.1-SNAPSHOT
+    restart: always
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/users?sslmode=disable
+      - SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE=25
+      - SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=90
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: '4'
+          memory: 1000M
+        reservations:
+          cpus: '0.5'
+          memory: 500M
+    depends_on:
+      postgres:
+        condition: service_healthy
+  postgres:
+    image: 'zahariaca/postgresql-perf:0.0.1'
+    ports:
+      - "5432:5432"
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: '4'
+          memory: 1000M
+        reservations:
+          cpus: '0.5'
+          memory: 500M
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: users
+      PGUSER: postgres
+    # volumes:
+    #   - postgres_database:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U postgres -d users'"]
+      interval: 5s
+      timeout: 1s
+      retries: 15
+    command: ["postgres", "-c", "log_statement=all", "-c", "log_destination=stderr"]
+
+# volumes:
+#     postgres_database:
+#         external: true
