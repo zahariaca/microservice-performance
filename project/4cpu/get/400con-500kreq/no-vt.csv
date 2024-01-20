@@ -1,0 +1,2 @@
+"Connections","NrOfReq","TimeTaken","Latency.Mean","Latency.Max","Req.Mean","Req.Max","Req2XX","Other"
+400,500000,24.5813223,19653.294454,255338,20909.502279705026,59018.75685173227,500000,0
