@@ -4,32 +4,33 @@
     "testType": "number-of-requests",
     "numberOfRequests": 100,
     "method": "GET",
-    "url": "http://127.0.0.1:8080/hello",
+    "url": "http://docker:8083/hello",
     "body": "",
     "stream": false,
-    "timeoutSeconds": 2,
+    "timeoutSeconds": 10,
     "client": "fasthttp"
   },
   "result": {
-    "bytesRead": 12900,
-    "bytesWritten": 6700,
-    "timeTakenSeconds": 0.0837607,
+    "bytesRead": 29100,
+    "bytesWritten": 6400,
+    "timeTakenSeconds": 0.2195553,
     "req1xx": 0,
     "req2xx": 100,
     "req3xx": 0,
     "req4xx": 0,
     "req5xx": 0,
     "others": 0,
-    "latency": { 
-        "mean": 837.16, 
-        "stddev": 361.1207073763564, 
-        "max": 3512 
+    "latency": {
+      "mean": 2195.07,
+      "stddev": 3741.0600632858063,
+      "max": 39096,
+      "percentiles": { "50": 1613, "75": 2162, "90": 2526, "95": 2721, "99": 3850 }
     },
     "rps": {
-      "mean": 1218.0604719236053,
-      "stddev": 129.8162911527512,
-      "max": 1340.8780069189306,
-      "percentiles": { "50": 1250.032553, "75": 1263.219593, "90": 1340.878007, "95": 1340.878007, "99": 1340.878007 }
+      "mean": 462.7216052808446,
+      "stddev": 218.8498041799807,
+      "max": 704.8032340399824,
+      "percentiles": { "50": 498.017889, "75": 568.789977, "90": 678.656261, "95": 678.656261, "99": 704.803234 }
     }
   }
 }
