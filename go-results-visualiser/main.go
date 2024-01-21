@@ -126,7 +126,7 @@ func firstPage(w http.ResponseWriter, _ *http.Request) {
 		createMaxReqGraph(scenarioNames, resultsMap),
 	)
 
-	f, err := os.Create("results/html/get-requests-results.html")
+	f, err := os.Create("../docs/get-requests-results.html")
 
 	if err != nil {
 		panic(err)
