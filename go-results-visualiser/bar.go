@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
+	"go-results-visualiser/models"
 )
 
 func createExecutionTimeGraph(scenarioNames []string, resultsMap map[string]Scenario) *charts.Bar {
@@ -43,7 +44,7 @@ func createMeanLatencyGraph(scenarioNames []string, resultsMap map[string]Scenar
 			items = append(items,
 				opts.BarData{
 					Name:  scenario.ServerName,
-					Value: unitToFloat(scenario.stats.LatencyMean),
+					Value: models.unitToFloat(scenario.stats.LatencyMean),
 				})
 		}
 
@@ -66,7 +67,7 @@ func createMaxLatencyGraph(scenarioNames []string, resultsMap map[string]Scenari
 			items = append(items,
 				opts.BarData{
 					Name:  scenario.ServerName,
-					Value: unitToFloat(scenario.stats.LatencyMax),
+					Value: models.unitToFloat(scenario.stats.LatencyMax),
 				})
 		}
 
