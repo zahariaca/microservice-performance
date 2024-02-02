@@ -6,7 +6,7 @@ import (
 	"go-results-visualiser/models"
 )
 
-func createExecutionTimeGraph(scenarioNames []string, resultsMap map[string]Scenario) *charts.Bar {
+func createExecutionTimeGraph(scenarioNames []string, resultsMap map[string]models.Scenario) *charts.Bar {
 	bar := createBarWithTitle(
 		"Execution time",
 		"Execution time measured in seconds (less is better)",
@@ -17,11 +17,11 @@ func createExecutionTimeGraph(scenarioNames []string, resultsMap map[string]Scen
 		scenarios := resultsMap[scenarioName]
 
 		items := make([]opts.BarData, 0)
-		for _, scenario := range scenarios.stats {
+		for _, scenario := range scenarios.Stats {
 			items = append(items,
 				opts.BarData{
 					Name:  scenario.ServerName,
-					Value: scenario.stats.TimeTaken,
+					Value: scenario.Stats.TimeTaken,
 				})
 		}
 
@@ -30,7 +30,7 @@ func createExecutionTimeGraph(scenarioNames []string, resultsMap map[string]Scen
 	return bar
 }
 
-func createMeanLatencyGraph(scenarioNames []string, resultsMap map[string]Scenario) *charts.Bar {
+func createMeanLatencyGraph(scenarioNames []string, resultsMap map[string]models.Scenario) *charts.Bar {
 	bar := createBarWithTitle(
 		"Mean Latency",
 		"Mean latency measured in ms (less is better)",
@@ -40,11 +40,11 @@ func createMeanLatencyGraph(scenarioNames []string, resultsMap map[string]Scenar
 		scenarios := resultsMap[scenarioName]
 
 		items := make([]opts.BarData, 0)
-		for _, scenario := range scenarios.stats {
+		for _, scenario := range scenarios.Stats {
 			items = append(items,
 				opts.BarData{
 					Name:  scenario.ServerName,
-					Value: models.unitToFloat(scenario.stats.LatencyMean),
+					Value: models.UnitToFloat(scenario.Stats.LatencyMean),
 				})
 		}
 
@@ -53,7 +53,7 @@ func createMeanLatencyGraph(scenarioNames []string, resultsMap map[string]Scenar
 	return bar
 }
 
-func createMaxLatencyGraph(scenarioNames []string, resultsMap map[string]Scenario) *charts.Bar {
+func createMaxLatencyGraph(scenarioNames []string, resultsMap map[string]models.Scenario) *charts.Bar {
 	bar := createBarWithTitle(
 		"Max Latency",
 		"Max latency measured in ms (less is better)",
@@ -63,11 +63,11 @@ func createMaxLatencyGraph(scenarioNames []string, resultsMap map[string]Scenari
 		scenarios := resultsMap[scenarioName]
 
 		items := make([]opts.BarData, 0)
-		for _, scenario := range scenarios.stats {
+		for _, scenario := range scenarios.Stats {
 			items = append(items,
 				opts.BarData{
 					Name:  scenario.ServerName,
-					Value: models.unitToFloat(scenario.stats.LatencyMax),
+					Value: models.UnitToFloat(scenario.Stats.LatencyMax),
 				})
 		}
 
@@ -76,7 +76,7 @@ func createMaxLatencyGraph(scenarioNames []string, resultsMap map[string]Scenari
 	return bar
 }
 
-func createMeanReqGraph(scenarioNames []string, resultsMap map[string]Scenario) *charts.Bar {
+func createMeanReqGraph(scenarioNames []string, resultsMap map[string]models.Scenario) *charts.Bar {
 	bar := createBarWithTitle(
 		"Mean Req/s",
 		"Mean number of requests executed in 1 second",
@@ -86,11 +86,11 @@ func createMeanReqGraph(scenarioNames []string, resultsMap map[string]Scenario) 
 		scenarios := resultsMap[scenarioName]
 
 		items := make([]opts.BarData, 0)
-		for _, scenario := range scenarios.stats {
+		for _, scenario := range scenarios.Stats {
 			items = append(items,
 				opts.BarData{
 					Name:  scenario.ServerName,
-					Value: scenario.stats.ReqMean,
+					Value: scenario.Stats.ReqMean,
 				})
 		}
 
@@ -99,7 +99,7 @@ func createMeanReqGraph(scenarioNames []string, resultsMap map[string]Scenario) 
 	return bar
 }
 
-func createMaxReqGraph(scenarioNames []string, resultsMap map[string]Scenario) *charts.Bar {
+func createMaxReqGraph(scenarioNames []string, resultsMap map[string]models.Scenario) *charts.Bar {
 	bar := createBarWithTitle(
 		"Max Req/s",
 		"Max number of requests executed in 1 second",
@@ -109,11 +109,11 @@ func createMaxReqGraph(scenarioNames []string, resultsMap map[string]Scenario) *
 		scenarios := resultsMap[scenarioName]
 
 		items := make([]opts.BarData, 0)
-		for _, scenario := range scenarios.stats {
+		for _, scenario := range scenarios.Stats {
 			items = append(items,
 				opts.BarData{
 					Name:  scenario.ServerName,
-					Value: scenario.stats.ReqMax,
+					Value: scenario.Stats.ReqMax,
 				})
 		}
 

@@ -42,7 +42,7 @@ func formatUnits(n float64, m *units, prec int) string {
 	return fmt.Sprintf("%.*f%s", prec, amt, unit)
 }
 
-func unitToFloat(n float64) float64 {
+func UnitToFloat(n float64) float64 {
 	m := timeUnitsUs
 	if n >= 1000000.0 {
 		n /= 1000000.0
