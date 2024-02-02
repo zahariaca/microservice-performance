@@ -122,10 +122,102 @@ func createMaxReqGraph(scenarioNames []string, resultsMap map[string]models.Scen
 	return bar
 }
 
+func createMinCpuUsageGraph(scenarioNames []string, resultsMap map[string]models.Scenario) *charts.Bar {
+	bar := createBarWithTitle(
+		"Min Cpu Usage %",
+		"Minimum cpu usage during test execution, as reported by `docker stats`",
+	)
+	for _, scenarioName := range scenarioNames {
+
+		scenarios := resultsMap[scenarioName]
+
+		items := make([]opts.BarData, 0)
+		for _, scenario := range scenarios.UsageStats {
+			items = append(items,
+				opts.BarData{
+					Name:  scenario.ServerName,
+					Value: scenario.MinCpuUsage,
+				})
+		}
+
+		bar.AddSeries(scenarioName, items)
+	}
+	return bar
+}
+
+func createMaxCpuUsageGraph(scenarioNames []string, resultsMap map[string]models.Scenario) *charts.Bar {
+	bar := createBarWithTitle(
+		"Max Cpu Usage %",
+		"Minimum cpu usage during test execution as percentage of the total allocated cores, reported by `docker stats`",
+	)
+	for _, scenarioName := range scenarioNames {
+
+		scenarios := resultsMap[scenarioName]
+
+		items := make([]opts.BarData, 0)
+		for _, scenario := range scenarios.UsageStats {
+			items = append(items,
+				opts.BarData{
+					Name:  scenario.ServerName,
+					Value: scenario.MaxCpuUsage,
+				})
+		}
+
+		bar.AddSeries(scenarioName, items)
+	}
+	return bar
+}
+
+func createMinMemoryUsageMiBGraph(scenarioNames []string, resultsMap map[string]models.Scenario) *charts.Bar {
+	bar := createBarWithTitle(
+		"Min Memory Usage (MiB)",
+		"Minimum minimum usage during test execution as MiB of the total allocated memory, reported by `docker stats`",
+	)
+	for _, scenarioName := range scenarioNames {
+
+		scenarios := resultsMap[scenarioName]
+
+		items := make([]opts.BarData, 0)
+		for _, scenario := range scenarios.UsageStats {
+			items = append(items,
+				opts.BarData{
+					Name:  scenario.ServerName,
+					Value: scenario.MinMemoryUsageMiB,
+				})
+		}
+
+		bar.AddSeries(scenarioName, items)
+	}
+	return bar
+}
+
+func createMaxMemoryUsageMiBGraph(scenarioNames []string, resultsMap map[string]models.Scenario) *charts.Bar {
+	bar := createBarWithTitle(
+		"Max Memory Usage (MiB)",
+		"Minimum minimum usage during test execution as MiB of the total allocated memory, reported by `docker stats`",
+	)
+	for _, scenarioName := range scenarioNames {
+
+		scenarios := resultsMap[scenarioName]
+
+		items := make([]opts.BarData, 0)
+		for _, scenario := range scenarios.UsageStats {
+			items = append(items,
+				opts.BarData{
+					Name:  scenario.ServerName,
+					Value: scenario.MaxMemoryUsageMiB,
+				})
+		}
+
+		bar.AddSeries(scenarioName, items)
+	}
+	return bar
+}
+
 func createBarWithTitle(title string, subtitle string) *charts.Bar {
 	bar := generateBarChart(title, subtitle, constServerNames)
 	bar.SetGlobalOptions(
-		charts.WithTooltipOpts(opts.Tooltip{Show: true}),
+		//charts.WithTooltipOpts(opts.Tooltip{Show: true}),
 		charts.WithLegendOpts(opts.Legend{Show: true, Right: "80px"}),
 	)
 	return bar
@@ -135,6 +227,9 @@ func generateBarChart(title string, subtitle string, labels []string) *charts.Ba
 	bar := charts.NewBar()
 
 	bar.SetGlobalOptions(
+		//charts.WithInitializationOpts(opts.Initialization{
+		//	Theme: "dark",
+		//}),
 		charts.WithTitleOpts(opts.Title{Title: title, Subtitle: subtitle}),
 	)
 

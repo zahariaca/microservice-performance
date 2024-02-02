@@ -50,13 +50,27 @@ func httpserver(w http.ResponseWriter, _ *http.Request) {
 	util.CheckForError(err)
 }
 
-func firstPage(w http.ResponseWriter, _ *http.Request) {
+func main() {
+	http.HandleFunc("/", httpserver)
+	http.HandleFunc("/4-cpu-get-results", fourCpuGetResults)
+	err := http.ListenAndServe(":7000", nil)
+	if err != nil {
+		return
+	}
+}
+
+func fourCpuGetResults(w http.ResponseWriter, _ *http.Request) {
+	//charts.WithInitializationOpts(opts.Initialization{
+	//	Theme: "dark",
+	//})
 	page := components.NewPage()
+	page.PageTitle = "4 CPU Get Request Results"
 
-	testCaseDir := "../project/4cpu/get"
-	resultsMap, scenarioNames := buildScenariosMap(testCaseDir)
-
-	log.Println("ScenarioNames: ", scenarioNames)
+	testCasesDir := "../project/4cpu/get"
+	testCases := findTestCaseDirectories(testCasesDir)
+	log.Println("Test cases:", testCases)
+	resultsMap, scenarioNames := buildScenariosMap(testCasesDir, testCases)
+	usageResults, usageScenarioNames := buildResourceUsageMap(testCasesDir, testCases)
 
 	page.AddCharts(
 		createExecutionTimeGraph(scenarioNames, resultsMap),
@@ -64,6 +78,10 @@ func firstPage(w http.ResponseWriter, _ *http.Request) {
 		createMaxLatencyGraph(scenarioNames, resultsMap),
 		createMeanReqGraph(scenarioNames, resultsMap),
 		createMaxReqGraph(scenarioNames, resultsMap),
+		createMinCpuUsageGraph(usageScenarioNames, usageResults),
+		createMaxCpuUsageGraph(usageScenarioNames, usageResults),
+		createMinMemoryUsageMiBGraph(usageScenarioNames, usageResults),
+		createMaxMemoryUsageMiBGraph(usageScenarioNames, usageResults),
 	)
 
 	f, err := os.Create("../docs/get-requests-results.html")
@@ -82,25 +100,28 @@ func firstPage(w http.ResponseWriter, _ *http.Request) {
 	}
 }
 
-func main() {
-
-	http.HandleFunc("/", httpserver)
-	http.HandleFunc("/firstPage", firstPage)
-	err := http.ListenAndServe(":7000", nil)
-	if err != nil {
-		return
-	}
-}
-
-func buildScenariosMap(testCaseDir string) (map[string]models.Scenario, []string) {
-	testCases := findTestCaseDirectories(testCaseDir)
-
-	log.Println(testCases)
+func buildScenariosMap(testCasesDir string, testCases []string) (map[string]models.Scenario, []string) {
+	pattern := "*-req.csv"
 
 	resultsMap := make(map[string]models.Scenario)
 	scenarioNames := make([]string, 0)
 	for _, tc := range testCases {
-		scenario := csv.FindTestCaseCsv(testCaseDir, tc)
+		scenario := csv.FindTestCaseScenarioCsv(testCasesDir, tc, pattern)
+		resultsMap[scenario.Name] = scenario
+		scenarioNames = append(scenarioNames, scenario.Name)
+	}
+	sort.Strings(scenarioNames)
+
+	return resultsMap, scenarioNames
+}
+
+func buildResourceUsageMap(testCasesDir string, testCases []string) (map[string]models.Scenario, []string) {
+	pattern := "*-stats.csv"
+
+	resultsMap := make(map[string]models.Scenario)
+	scenarioNames := make([]string, 0)
+	for _, tc := range testCases {
+		scenario := csv.FindTestCaseResourceUsageCsv(testCasesDir, tc, pattern)
 		resultsMap[scenario.Name] = scenario
 		scenarioNames = append(scenarioNames, scenario.Name)
 	}

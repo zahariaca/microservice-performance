@@ -39,8 +39,9 @@ func (serverStat ServerStats) String() string {
 }
 
 type Scenario struct {
-	Name  string
-	Stats []ServerStats
+	Name       string
+	Stats      []ServerStats
+	UsageStats []UsageStats
 }
 
 func (scenario Scenario) String() string {
