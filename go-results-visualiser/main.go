@@ -53,6 +53,7 @@ func httpserver(w http.ResponseWriter, _ *http.Request) {
 func main() {
 	http.HandleFunc("/", httpserver)
 	http.HandleFunc("/4-cpu-get-results", fourCpuGetResults)
+	http.HandleFunc("/auto-4-cpu-get-results", autoFourCpuGetResults)
 	err := http.ListenAndServe(":7000", nil)
 	if err != nil {
 		return
@@ -99,7 +100,46 @@ func fourCpuGetResults(w http.ResponseWriter, _ *http.Request) {
 		return
 	}
 }
+func autoFourCpuGetResults(w http.ResponseWriter, _ *http.Request) {
+	//charts.WithInitializationOpts(opts.Initialization{
+	//	Theme: "dark",
+	//})
+	page := components.NewPage()
+	page.PageTitle = "4 CPU Get Request Results"
 
+	testCasesDir := "../project/automated/4cpu/get-redo"
+	testCases := findTestCaseDirectories(testCasesDir)
+	log.Println("Test cases:", testCases)
+	resultsMap, scenarioNames := buildScenariosMap(testCasesDir, testCases)
+	usageResults, usageScenarioNames := buildResourceUsageMap(testCasesDir, testCases)
+
+	page.AddCharts(
+		createExecutionTimeGraph(scenarioNames, resultsMap),
+		createMeanLatencyGraph(scenarioNames, resultsMap),
+		createMaxLatencyGraph(scenarioNames, resultsMap),
+		createMeanReqGraph(scenarioNames, resultsMap),
+		createMaxReqGraph(scenarioNames, resultsMap),
+		createMinCpuUsageGraph(usageScenarioNames, usageResults),
+		createMaxCpuUsageGraph(usageScenarioNames, usageResults),
+		createMinMemoryUsageMiBGraph(usageScenarioNames, usageResults),
+		createMaxMemoryUsageMiBGraph(usageScenarioNames, usageResults),
+	)
+
+	f, err := os.Create("../docs/auto-4cpu-get-requests-results.html")
+
+	if err != nil {
+		panic(err)
+	}
+	err = page.Render(io.MultiWriter(f))
+	if err != nil {
+		return
+	}
+
+	err = page.Render(w)
+	if err != nil {
+		return
+	}
+}
 func buildScenariosMap(testCasesDir string, testCases []string) (map[string]models.Scenario, []string) {
 	pattern := "*-req.csv"
 

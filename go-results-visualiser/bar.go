@@ -44,7 +44,7 @@ func createMeanLatencyGraph(scenarioNames []string, resultsMap map[string]models
 			items = append(items,
 				opts.BarData{
 					Name:  scenario.ServerName,
-					Value: models.UnitToFloat(scenario.Stats.LatencyMean),
+					Value: models.ConvertToMs(scenario.Stats.LatencyMean),
 				})
 		}
 
@@ -63,11 +63,14 @@ func createMaxLatencyGraph(scenarioNames []string, resultsMap map[string]models.
 		scenarios := resultsMap[scenarioName]
 
 		items := make([]opts.BarData, 0)
+
 		for _, scenario := range scenarios.Stats {
+			value := models.ConvertToMs(scenario.Stats.LatencyMax)
+
 			items = append(items,
 				opts.BarData{
 					Name:  scenario.ServerName,
-					Value: models.UnitToFloat(scenario.Stats.LatencyMax),
+					Value: value,
 				})
 		}
 
@@ -170,8 +173,8 @@ func createMaxCpuUsageGraph(scenarioNames []string, resultsMap map[string]models
 
 func createMinMemoryUsageMiBGraph(scenarioNames []string, resultsMap map[string]models.Scenario) *charts.Bar {
 	bar := createBarWithTitle(
-		"Min Memory Usage (MiB)",
-		"Minimum minimum usage during test execution as MiB of the total allocated memory, reported by `docker stats`",
+		"Min Mem Usage (MiB)",
+		"Minimum usage during test execution as MiB of the total allocated memory, reported by `docker stats`",
 	)
 	for _, scenarioName := range scenarioNames {
 
@@ -193,8 +196,8 @@ func createMinMemoryUsageMiBGraph(scenarioNames []string, resultsMap map[string]
 
 func createMaxMemoryUsageMiBGraph(scenarioNames []string, resultsMap map[string]models.Scenario) *charts.Bar {
 	bar := createBarWithTitle(
-		"Max Memory Usage (MiB)",
-		"Minimum minimum usage during test execution as MiB of the total allocated memory, reported by `docker stats`",
+		"Max Mem Usage (MiB)",
+		"Maximum usage during test execution as MiB of the total allocated memory, reported by `docker stats`",
 	)
 	for _, scenarioName := range scenarioNames {
 
@@ -217,7 +220,9 @@ func createMaxMemoryUsageMiBGraph(scenarioNames []string, resultsMap map[string]
 func createBarWithTitle(title string, subtitle string) *charts.Bar {
 	bar := generateBarChart(title, subtitle, constServerNames)
 	bar.SetGlobalOptions(
-		//charts.WithTooltipOpts(opts.Tooltip{Show: true}),
+		charts.WithTooltipOpts(opts.Tooltip{
+			Show: true,
+		}),
 		charts.WithLegendOpts(opts.Legend{Show: true, Right: "80px"}),
 	)
 	return bar
